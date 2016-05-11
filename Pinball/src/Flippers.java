@@ -21,13 +21,13 @@ public class Flippers implements KeyListener
 		return rightPosition;
 	}
 	
-	@Override
+
 	public void keyTyped(KeyEvent e)
 	{
 		
 	}
 
-	@Override
+
 	public void keyPressed(KeyEvent e)
 	{
 		if(e.getKeyCode() == KeyEvent.VK_LEFT)
@@ -37,7 +37,6 @@ public class Flippers implements KeyListener
 		
 	}
 
-	@Override
 	public void keyReleased(KeyEvent e)
 	{
 			
