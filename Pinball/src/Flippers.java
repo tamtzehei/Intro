@@ -1,12 +1,9 @@
-import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class Flippers implements KeyListener
+public class Flippers
 {
 	int x,y;
 	boolean leftPosition, rightPosition; // false for down  true for up
@@ -36,40 +33,38 @@ public class Flippers implements KeyListener
 		}
 		this.x = x;
 		this.y = y;
+		
 	}
 	
-	public void paint(Graphics g)
+	public boolean isLeftPosition()
 	{
-		if(leftPosition)
-			g.drawImage(leftFlipperUp, x, y, 50, 50, null);
+		return leftPosition;
+	}
+
+	public boolean isRightPosition()
+	{
+		return rightPosition;
+	}
+	/**
+	 * 
+	 * @param upDown
+	 * 			- true for up and false for down
+	 * @param leftRight
+	 * 			- true for left and false for right
+	 * @return
+	 */
+	public BufferedImage getImage(boolean upDown, boolean leftRight)
+	{
+		if(leftRight && upDown)
+			return leftFlipperUp;
+		else if(upDown)
+			return rightFlipperUp;
+		else if(leftRight)
+			return leftFlipperDown;
 		else
-			g.drawImage(leftFlipperDown, x, y, 50, 50, null);
-		
-		if(rightPosition)
-			g.drawImage(rightFlipperUp, x, y, 50, 50, null);
-		else
-			g.drawImage(rightFlipperDown, x, y, 50, 50, null);
+			return rightFlipperDown;
 	}
 	
-	public void keyTyped(KeyEvent e)
-	{
-		
-	}
-
-
-	public void keyPressed(KeyEvent e)
-	{
-		if(e.getKeyCode() == KeyEvent.VK_LEFT)
-			leftPosition = true;
-		else if(e.getKeyCode() == KeyEvent.VK_RIGHT)
-			rightPosition = true;
-		
-		
-	}
-
-	public void keyReleased(KeyEvent e)
-	{
-			
-	}
-
+	
+	
 }

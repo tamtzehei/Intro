@@ -1,13 +1,27 @@
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 public class Pinball
+
 {
 	int x,y;
 	int dx,dy;
+	static BufferedImage pinball;
 	
-	public Pinball()
+	public Pinball(int x, int y)
 	{
-
+		try
+		{
+			pinball = ImageIO.read(getClass().getResourceAsStream("pinball.jpg"));
+		} catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		this.x = x;
+		this.y = y;
 	}
 	public void move()
 	{
@@ -48,5 +62,13 @@ public class Pinball
 	public void setY(int y)
 	{
 		this.y = y;
+	}
+	public Rectangle getRectangle()
+	{
+		return new Rectangle(x,y,50,50);
+	}
+	public BufferedImage getImage()
+	{
+		return pinball;
 	}
 }
