@@ -22,13 +22,13 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	
 	public int board[][] = 
 	{
-		//	{1,1,1,1,1,1,1,1,1,1,1,1},
-		//	{1,6,3,3,3,3,3,3,3,3,7,1},
-		//	{1,3,3,4,3,4,3,4,3,3,3,1},
-		//	{1,3,3,3,3,3,3,3,3,1,3,1},
-		//	{1,3,4,3,4,3,4,3,3,1,3,1},
-		//	{1,3,3,3,3,3,3,3,3,1,3,1},
-		//	{1,3,3,4,3,4,3,4,3,1,3,1},
+//			{1,1,1,1,1,1,1,1,1,1,1,1},
+//			{1,6,3,3,3,3,3,3,3,3,7,1},
+//			{1,3,3,4,3,4,3,4,3,3,3,1},
+//			{1,3,3,3,3,3,3,3,3,1,3,1},
+//			{1,3,4,3,4,3,4,3,3,1,3,1},
+//			{1,3,3,3,3,3,3,3,3,1,3,1},
+//			{1,3,3,4,3,4,3,4,3,1,3,1},
 			{1,3,3,3,3,3,3,3,3,1,3,1},
 			{1,3,4,3,4,3,4,3,3,1,3,1},
 			{1,3,3,3,3,3,3,3,3,1,3,1},
@@ -77,6 +77,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	public void paint(Graphics g)
 	{
 		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 50, 50, null);
+		
 		for(int i = 0; i < 13; i++)
 		{
 			for(int j = 0; j < 12; j++)
@@ -111,7 +112,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				}
 				else if(board[i][j] == 8)
 				{
-					g.drawImage(spring, j * 50, i * 50 , 50, 50, null);
+					g.drawImage(spring, j * 50, i * 50 , 50, 100, null);
 				}
 				else if(board[i][j] == 9)
 				{
@@ -159,7 +160,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		spring = compressed;
 		repaint();
 	}
-	public void checkBumperCollisions()
+	public void updatePinball()
 	{
 		Rectangle ballRect = ball.getRectangle();
 		for(Bumpers b : bumpers)
@@ -169,7 +170,15 @@ public class Board extends JFrame implements ActionListener, KeyListener
 			{
 				b.image = b.litBumper;
 				score += 100;
+				boolean vertical = false, horizontal = false;
+				if(ball.getX() < b.x)
+					horizontal = true;
+				if(ball.getY() < b.y)
+					vertical = true;
+				ball.changeDirection(vertical, horizontal);
 			}
+			else
+				ball.move();
 		}
 	}
 }
