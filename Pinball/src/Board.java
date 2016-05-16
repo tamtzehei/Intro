@@ -22,13 +22,13 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	
 	public int board[][] = 
 	{
-//			{1,1,1,1,1,1,1,1,1,1,1,1},
-//			{1,6,3,3,3,3,3,3,3,3,7,1},
-//			{1,3,3,4,3,4,3,4,3,3,3,1},
-//			{1,3,3,3,3,3,3,3,3,1,3,1},
-//			{1,3,4,3,4,3,4,3,3,1,3,1},
-//			{1,3,3,3,3,3,3,3,3,1,3,1},
-//			{1,3,3,4,3,4,3,4,3,1,3,1},
+			{1,1,1,1,1,1,1,1,1,1,1,1},
+    		{1,6,3,3,3,3,3,3,3,3,7,1},			
+        	{1,3,3,4,3,4,3,4,3,3,3,1},
+		    {1,3,3,3,3,3,3,3,3,1,3,1},
+			{1,3,4,3,4,3,4,3,3,1,3,1},
+	    	{1,3,3,3,3,3,3,3,3,1,3,1},
+		    {1,3,3,4,3,4,3,4,3,1,3,1},
 			{1,3,3,3,3,3,3,3,3,1,3,1},
 			{1,3,4,3,4,3,4,3,3,1,3,1},
 			{1,3,3,3,3,3,3,3,3,1,3,1},
@@ -57,14 +57,14 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ball = new Pinball(300, 400);
+		ball = new Pinball(200, 300);
 		left = new Flippers(false, 5 * 50, 11 * 50);
 		right = new Flippers(true, 7 * 50, 11 * 50);
 		spring = compressed;
 	}
 	public void initialize()
 	{
-		for(int i = 0; i < 13; i++)
+		for(int i = 0; i < 20; i++)
 		{
 			for(int j = 0; j < 12; j++)
 			{
@@ -76,9 +76,9 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	
 	public void paint(Graphics g)
 	{
-		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 50, 50, null);
+		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
 		
-		for(int i = 0; i < 13; i++)
+		for(int i = 0; i < 20; i++)
 		{
 			for(int j = 0; j < 12; j++)
 			{
@@ -100,7 +100,16 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				}
 				else if(board[i][j] == 5)
 				{
-					g.drawImage(left.getImage(left.isLeftPosition(), true), j * 50, i * 50, 60, 60, null);
+					if(left.leftPosition)
+					{
+						g.drawImage(left.getImage(true, true), j * 50, (i - 1) * 50, 50, 50, null);
+						g.clearRect(j * 50, i * 50, 50, 50);
+					}
+					else
+					{
+						g.drawImage(left.getImage(false, true), j * 50, i * 50, 50, 50, null);
+						g.clearRect(j * 50, (i - 1) * 50, 50, 50);
+					}
 				}
 				else if(board[i][j] == 6)
 				{
@@ -112,7 +121,10 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				}
 				else if(board[i][j] == 8)
 				{
-					g.drawImage(spring, j * 50, i * 50 , 50, 100, null);
+					if(spring.equals(compressed))
+						g.drawImage(spring, j * 50, i * 50 , 50, 50, null);
+					else
+						g.drawImage(spring, j * 50, i * 50, 50, 100, null);
 				}
 				else if(board[i][j] == 9)
 				{
@@ -121,19 +133,28 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				}
 				else if(board[i][j] == 10)
 				{
-					g.drawImage(right.getImage(right.isRightPosition(), false), j * 50, i * 50, 60, 60, null);
+					if(right.rightPosition)
+					{
+						g.drawImage(right.getImage(true, false), j * 50, (i - 1) * 50, 50, 50, null);
+						g.clearRect(j * 50, i * 50, 50, 50);
+					}
+					else
+					{
+						g.drawImage(right.getImage(false, false), j * 50, i * 50, 50, 50, null);
+						g.clearRect(j * 50, (i - 1) * 50, 50, 50);
+					}
 				}
 				else if(board[i][j] == 11)
 				{
 					g.drawImage(rightUp, j * 50, i * 50, 50, 50, null);
 				}
-				
 			}
 		}
 	}
 	public void actionPerformed(ActionEvent e)
 	{
-	
+		updatePinball();
+		repaint();
 	}
 	public void keyTyped(KeyEvent e)
 	{

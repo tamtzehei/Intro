@@ -15,8 +15,8 @@ public class Flippers
 		{
 			rightPosition = false;
 			try {
-				rightFlipperDown = ImageIO.read(getClass().getResourceAsStream("rightdown.jpg"));
-				rightFlipperUp = ImageIO.read(getClass().getResourceAsStream("rightup.jpg"));
+				rightFlipperDown = ImageIO.read(getClass().getResourceAsStream("rightdown.png"));
+				rightFlipperUp = ImageIO.read(getClass().getResourceAsStream("rightup.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
