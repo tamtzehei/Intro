@@ -7,7 +7,7 @@ import javax.imageio.ImageIO;
 public class Bumpers
 {
 	int x,y;
-	static BufferedImage bumper, litBumper, image;
+	BufferedImage bumper, litBumper, image;
 	
 	public Bumpers(int x, int y)
 	{

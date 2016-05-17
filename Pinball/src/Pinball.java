@@ -8,7 +8,7 @@ public class Pinball
 
 {
 	int x,y;
-	int dx,dy;
+	int dx = 0,dy = 0;
 	static BufferedImage pinball;
 	
 	public Pinball(int x, int y)
@@ -28,7 +28,7 @@ public class Pinball
 		x += dx;
 		y += dy;
 		
-		dy -= 1;
+		dy += 1;
 	}
 	/**
 	 * 

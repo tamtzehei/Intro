@@ -8,6 +8,7 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -15,10 +16,12 @@ import javax.swing.JFrame;
 public class Board extends JFrame implements ActionListener, KeyListener
 {
 	ArrayList<Bumpers> bumpers = new ArrayList<Bumpers>();
+	ArrayList<Wall> walls = new ArrayList<Wall>();
 	Flippers left, right;
 	static BufferedImage leftDown, leftUp, rightDown, rightUp, compressed, released, spring;
 	Pinball ball;
-	int score;
+	int score, ballsLeft;
+	boolean gameOver = true;
 	
 	public int board[][] = 
 	{
@@ -43,6 +46,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 			{1,1,1,1,2,3,11,1,1,1,8,1},
 			{1,1,1,1,1,3,1,1,1,1,1,1},
 	};
+	
 	public Board()
 	{
 		addKeyListener(this);
@@ -70,9 +74,18 @@ public class Board extends JFrame implements ActionListener, KeyListener
 			{
 				if(board[i][j] == 4)
 					bumpers.add(new Bumpers(j * 50, i * 50));
+				else if(board[i][j] == 6)
+					walls.add(new Wall(j * 50, (i + 1) * 50, (j + 1) * 50, i * 50));
+				else if(board[i][j] == 7)
+					walls.add(new Wall(j * 50, i * 50, (j + 1) * 50, (i + 1) * 50));
+				else if(board[i][j] == 2)
+					walls.add(new Wall(j * 50, i * 50, (j + 1) * 50, (i + 1) * 50));
+				else if(board[i][j] == 11)
+					walls.add(new Wall(j * 50, (i + 1) * 50, (j + 1) * 50, i * 50));
 			}
 		}
 	}
+
 	
 	public void paint(Graphics g)
 	{
@@ -86,6 +99,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				{
 					g.setColor(Color.YELLOW);
 					g.fillRect(j * 50, i * 50, 50, 50);
+					
 				}
 				else if(board[i][j] == 2)
 				{
@@ -153,8 +167,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	}
 	public void actionPerformed(ActionEvent e)
 	{
-		updatePinball();
-		repaint();
+		
 	}
 	public void keyTyped(KeyEvent e)
 	{
@@ -164,6 +177,8 @@ public class Board extends JFrame implements ActionListener, KeyListener
 
 	public void keyPressed(KeyEvent e)
 	{
+		updatePinball();
+		repaint();
 		if(e.getKeyCode() == KeyEvent.VK_LEFT)
 			left.leftPosition = true;
 		else if(e.getKeyCode() == KeyEvent.VK_RIGHT)
@@ -197,9 +212,20 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				if(ball.getY() < b.y)
 					vertical = true;
 				ball.changeDirection(vertical, horizontal);
-			}
-			else
-				ball.move();
+			}			
 		}
+		for(Wall w : walls)
+		{
+			if(ballRect.intersectsLine(w.getX1(), w.getY1(), w.getX2(), w.getY2()))
+			{
+				boolean vertical = false, horizontal = false;
+				if(ball.getX() < w.getX1())
+					horizontal = true;
+				if(ball.getY() < w.getY1())
+					vertical = true;
+				ball.changeDirection(vertical, horizontal);
+			}
+		}
+		ball.move();
 	}
 }

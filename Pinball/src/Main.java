@@ -10,5 +10,6 @@ public class Main
 		frm.setSize(600, 1000);
 		frm.setVisible(true);
 		frm.repaint();
+		
 	}
 }
