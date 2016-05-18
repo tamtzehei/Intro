@@ -8,7 +8,7 @@ public class Pinball
 
 {
 	int x,y;
-	int dx = 0,dy = 0;
+	int dx = 0,dy = 1;
 	static BufferedImage pinball;
 	
 	public Pinball(int x, int y)
@@ -28,23 +28,25 @@ public class Pinball
 		x += dx;
 		y += dy;
 		
-		dy += 1;
+		
 	}
 	/**
 	 * 
 	 * @param vertical 
 	 * 				- if it hit a vertical wall
 	 * @param horizontal
-	 * 				- if it hit a horizontal wall or corner
+	 * 				- if it hit a horizontal wall
 	 */
 	public void changeDirection(boolean vertical, boolean horizontal)
 	{
+		int temp = dy;
 		dy = dx;
-		dx = dy;
+		dx = temp;
 		if(vertical)
 			dx = -dx;
-		else if(horizontal)
+		if(horizontal)
 			dy = -dy;
+		
 		
 	}
 	public int getX()
@@ -65,7 +67,7 @@ public class Pinball
 	}
 	public Rectangle getRectangle()
 	{
-		return new Rectangle(x,y,50,50);
+		return new Rectangle(x,y,30,30);
 	}
 	public BufferedImage getImage()
 	{

@@ -17,6 +17,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 {
 	ArrayList<Bumpers> bumpers = new ArrayList<Bumpers>();
 	ArrayList<Wall> walls = new ArrayList<Wall>();
+	ArrayList<WallBlock> wallBlocks = new ArrayList<WallBlock>();
 	Flippers left, right;
 	static BufferedImage leftDown, leftUp, rightDown, rightUp, compressed, released, spring;
 	Pinball ball;
@@ -74,6 +75,8 @@ public class Board extends JFrame implements ActionListener, KeyListener
 			{
 				if(board[i][j] == 4)
 					bumpers.add(new Bumpers(j * 50, i * 50));
+				else if(board[i][j] == 1)
+					wallBlocks.add(new WallBlock(j * 50, i * 50));
 				else if(board[i][j] == 6)
 					walls.add(new Wall(j * 50, (i + 1) * 50, (j + 1) * 50, i * 50));
 				else if(board[i][j] == 7)
@@ -89,7 +92,9 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	
 	public void paint(Graphics g)
 	{
+
 		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
+		g.drawRect(ball.getX(), ball.getY(), 30, 30);
 		
 		for(int i = 0; i < 20; i++)
 		{
@@ -105,13 +110,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				{
 					g.drawImage(leftUp, j * 50, i * 50, 50, 50, null);
 				}
-				else if(board[i][j] == 4)
-				{
-					for(Bumpers b : bumpers)
-					{
-						g.drawImage(b.getImage(), j * 50, i * 50, 50, 50, null);
-					}
-				}
+				
 				else if(board[i][j] == 5)
 				{
 					if(left.leftPosition)
@@ -162,6 +161,18 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				{
 					g.drawImage(rightUp, j * 50, i * 50, 50, 50, null);
 				}
+
+				for(Bumpers b : bumpers)
+				{
+					g.drawImage(b.getImage(), b.x, b.y, 50, 50, null);
+					b.image = b.bumper;
+					g.setColor(Color.GREEN);
+					g.drawRect(b.x, b.y, 50, 50);
+				}
+				for(WallBlock w : wallBlocks)
+				{
+					g.drawRect(w.getX(), w.getY(), 50, 50);
+				}
 			}
 		}
 	}
@@ -178,7 +189,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	public void keyPressed(KeyEvent e)
 	{
 		updatePinball();
-		repaint();
+
 		if(e.getKeyCode() == KeyEvent.VK_LEFT)
 			left.leftPosition = true;
 		else if(e.getKeyCode() == KeyEvent.VK_RIGHT)
@@ -207,9 +218,9 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				b.image = b.litBumper;
 				score += 100;
 				boolean vertical = false, horizontal = false;
-				if(ball.getX() < b.x)
+				if(ball.getX() != b.x)
 					horizontal = true;
-				if(ball.getY() < b.y)
+				if(ball.getY() != b.y)
 					vertical = true;
 				ball.changeDirection(vertical, horizontal);
 			}			
@@ -218,10 +229,18 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		{
 			if(ballRect.intersectsLine(w.getX1(), w.getY1(), w.getX2(), w.getY2()))
 			{
+				ball.changeDirection(true, true);
+			}
+		}
+		for(WallBlock w : wallBlocks)
+		{
+			Rectangle wallRect = w.getRectangle();
+			if(ballRect.intersects(wallRect))
+			{
 				boolean vertical = false, horizontal = false;
-				if(ball.getX() < w.getX1())
+				if(ball.getX() != w.getX())
 					horizontal = true;
-				if(ball.getY() < w.getY1())
+				if(ball.getY() != w.getY())
 					vertical = true;
 				ball.changeDirection(vertical, horizontal);
 			}
