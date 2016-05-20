@@ -62,7 +62,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ball = new Pinball(200, 300);
+		ball = new Pinball(200,600);
 		left = new Flippers(false, 5 * 50, 11 * 50);
 		right = new Flippers(true, 7 * 50, 11 * 50);
 		spring = compressed;
@@ -92,10 +92,8 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	
 	public void paint(Graphics g)
 	{
-
-		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
-		g.drawRect(ball.getX(), ball.getY(), 30, 30);
-		
+		g.clearRect(0, 0, 600, 1000);
+	
 		for(int i = 0; i < 20; i++)
 		{
 			for(int j = 0; j < 12; j++)
@@ -162,19 +160,28 @@ public class Board extends JFrame implements ActionListener, KeyListener
 					g.drawImage(rightUp, j * 50, i * 50, 50, 50, null);
 				}
 
-				for(Bumpers b : bumpers)
-				{
-					g.drawImage(b.getImage(), b.x, b.y, 50, 50, null);
-					b.image = b.bumper;
-					g.setColor(Color.GREEN);
-					g.drawRect(b.x, b.y, 50, 50);
-				}
-				for(WallBlock w : wallBlocks)
-				{
-					g.drawRect(w.getX(), w.getY(), 50, 50);
-				}
 			}
 		}
+
+		for(Bumpers b : bumpers)
+		{
+			g.drawImage(b.getImage(), b.x, b.y, 50, 50, null);
+			b.image = b.bumper;
+			g.setColor(Color.GREEN);
+			g.drawRect(b.x, b.y, 50, 50);
+		}
+		for(WallBlock w : wallBlocks)
+		{
+			g.drawRect(w.getX(), w.getY(), 50, 50);
+		}
+		for(Wall w : walls)
+		{
+			g.drawLine((int)w.getX1(), (int)w.getY1(), (int)w.getX2(), (int)w.getY2());
+		}
+		g.drawLine((int)left.getX1(true, true), (int)left.getY1(true, true), (int)left.getX2(true, true), (int)left.getY2(true, true));
+		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
+		g.drawRect(ball.getX(), ball.getY(), 30, 30);
+		
 	}
 	public void actionPerformed(ActionEvent e)
 	{
@@ -189,7 +196,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	public void keyPressed(KeyEvent e)
 	{
 		updatePinball();
-
+		repaint();
 		if(e.getKeyCode() == KeyEvent.VK_LEFT)
 			left.leftPosition = true;
 		else if(e.getKeyCode() == KeyEvent.VK_RIGHT)
@@ -218,18 +225,20 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				b.image = b.litBumper;
 				score += 100;
 				boolean vertical = false, horizontal = false;
-				if(ball.getX() != b.x)
+				if(ball.getX() - b.x < 5)
 					horizontal = true;
-				if(ball.getY() != b.y)
+				if(ball.getY() - b.y < 5)
 					vertical = true;
-				ball.changeDirection(vertical, horizontal);
+				ball.changeDirection(vertical, horizontal, false);
+				break;
 			}			
 		}
 		for(Wall w : walls)
 		{
 			if(ballRect.intersectsLine(w.getX1(), w.getY1(), w.getX2(), w.getY2()))
 			{
-				ball.changeDirection(true, true);
+				ball.changeDirection(false, false, true);
+				break;
 			}
 		}
 		for(WallBlock w : wallBlocks)
@@ -238,12 +247,22 @@ public class Board extends JFrame implements ActionListener, KeyListener
 			if(ballRect.intersects(wallRect))
 			{
 				boolean vertical = false, horizontal = false;
-				if(ball.getX() != w.getX())
+				if(ball.getX() - w.getX() < 5)
 					horizontal = true;
-				if(ball.getY() != w.getY())
+				if(ball.getY() - w.getY() < 5)
 					vertical = true;
-				ball.changeDirection(vertical, horizontal);
+				ball.changeDirection(vertical, horizontal, false);
+				break;
 			}
+		}
+		if(ballRect.intersectsLine(left.getX1(true, true), left.getY1(true, true), left.getX2(true, true), left.getY2(true, true)) || ballRect.intersectsLine(right.getX1(true, false), right.getY1(true, false), right.getX2(true, false), right.getY2(true, false)))
+		{
+			ball.changeDirection(false, false, true);
+			ball.dy += 20;
+		}
+		else
+		{
+			ball.changeDirection(false, false, true);
 		}
 		ball.move();
 	}

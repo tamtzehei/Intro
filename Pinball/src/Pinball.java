@@ -22,12 +22,14 @@ public class Pinball
 		}
 		this.x = x;
 		this.y = y;
+	
 	}
 	public void move()
 	{
 		x += dx;
 		y += dy;
-		
+		if(dy < 5)
+			dy += 1;
 		
 	}
 	/**
@@ -37,16 +39,25 @@ public class Pinball
 	 * @param horizontal
 	 * 				- if it hit a horizontal wall
 	 */
-	public void changeDirection(boolean vertical, boolean horizontal)
+	public void changeDirection(boolean vertical, boolean horizontal, boolean corner)
 	{
-		int temp = dy;
-		dy = dx;
-		dx = temp;
+		
 		if(vertical)
 			dx = -dx;
 		if(horizontal)
 			dy = -dy;
+		if(corner)
+		{
+			int temp = dy;
+			dy = dx;
+			dx = temp;
+		}
+			
 		
+		
+	}
+	public void bumperHit()
+	{
 		
 	}
 	public int getX()
