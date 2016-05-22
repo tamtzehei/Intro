@@ -28,7 +28,7 @@ public class Pinball
 	{
 		x += dx;
 		y += dy;
-		if(dy < 5)
+		if(dy < 1)
 			dy += 1;
 		
 	}
@@ -41,17 +41,17 @@ public class Pinball
 	 */
 	public void changeDirection(boolean vertical, boolean horizontal, boolean corner)
 	{
-		
-		if(vertical)
-			dx = -dx;
-		if(horizontal)
-			dy = -dy;
 		if(corner)
 		{
 			int temp = dy;
 			dy = dx;
 			dx = temp;
 		}
+		if(vertical)
+			dx = -dx;
+		if(horizontal)
+			dy = -dy;
+		
 			
 		
 		

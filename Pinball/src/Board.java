@@ -26,26 +26,26 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	
 	public int board[][] = 
 	{
-			{1,1,1,1,1,1,1,1,1,1,1,1},
-    		{1,6,3,3,3,3,3,3,3,3,7,1},			
-        	{1,3,3,4,3,4,3,4,3,3,3,1},
-		    {1,3,3,3,3,3,3,3,3,1,3,1},
-			{1,3,4,3,4,3,4,3,3,1,3,1},
-	    	{1,3,3,3,3,3,3,3,3,1,3,1},
-		    {1,3,3,4,3,4,3,4,3,1,3,1},
+		//	{8,8,1,1,1,1,1,1,1,1,8,8},
+    	//	{8,6,3,3,3,3,3,3,3,3,7,8},			
+        //	{1,3,3,4,3,4,3,4,3,3,3,1},
+		//  {1,3,3,3,3,3,3,3,3,1,3,1},
+		//	{1,3,4,3,4,3,4,3,3,1,3,1},
+	    //	{1,3,3,3,3,3,3,3,3,1,3,1},
+		//  {1,3,3,4,3,4,3,4,3,1,3,1},
 			{1,3,3,3,3,3,3,3,3,1,3,1},
 			{1,3,4,3,4,3,4,3,3,1,3,1},
 			{1,3,3,3,3,3,3,3,3,1,3,1},
-			{1,2,3,3,3,3,3,3,3,1,3,1},
-			{1,1,3,3,3,3,3,3,3,1,3,1},
-			{1,1,3,9,3,3,3,9,3,1,3,1},
-			{1,1,3,9,3,3,3,9,3,1,3,1},
-			{1,1,3,3,3,3,3,3,3,1,3,1},
-			{1,1,2,3,3,3,3,3,11,1,3,1},
-			{1,1,1,2,3,3,3,11,1,1,3,1},
-			{1,1,1,1,5,3,10,1,1,1,3,1},
-			{1,1,1,1,2,3,11,1,1,1,8,1},
-			{1,1,1,1,1,3,1,1,1,1,1,1},
+			{8,2,3,3,3,3,3,3,3,1,3,1},
+			{8,1,3,3,3,3,3,3,3,1,3,1},
+			{8,1,3,9,3,3,3,9,3,1,3,1},
+			{8,1,3,9,3,3,3,9,3,1,3,1},
+			{8,1,3,3,3,3,3,3,3,1,3,1},
+			{8,8,2,3,3,3,3,3,11,1,3,1},
+			{8,8,8,2,3,3,3,11,8,1,3,1},
+			{8,8,8,1,5,3,10,1,8,1,3,1},
+			{8,8,8,8,2,3,11,8,8,1,12,1},
+			{8,8,8,8,1,3,1,8,8,8,1,8},
 	};
 	
 	public Board()
@@ -62,14 +62,14 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ball = new Pinball(200,600);
+		ball = new Pinball(200,100);
 		left = new Flippers(false, 5 * 50, 11 * 50);
 		right = new Flippers(true, 7 * 50, 11 * 50);
 		spring = compressed;
 	}
 	public void initialize()
 	{
-		for(int i = 0; i < 20; i++)
+		for(int i = 0; i < 13; i++)
 		{
 			for(int j = 0; j < 12; j++)
 			{
@@ -92,9 +92,11 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	
 	public void paint(Graphics g)
 	{
-		g.clearRect(0, 0, 600, 1000);
-	
-		for(int i = 0; i < 20; i++)
+	//	g.clearRect(0, 0, 600, 1000);
+		updatePinball();
+		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
+		
+		for(int i = 0; i < 13; i++)
 		{
 			for(int j = 0; j < 12; j++)
 			{
@@ -130,12 +132,12 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				{
 					g.drawImage(rightDown, j * 50, i * 50, 50, 50, null);
 				}
-				else if(board[i][j] == 8)
+				else if(board[i][j] == 12)
 				{
 					if(spring.equals(compressed))
 						g.drawImage(spring, j * 50, i * 50 , 50, 50, null);
 					else
-						g.drawImage(spring, j * 50, i * 50, 50, 100, null);
+						g.drawImage(spring, j * 50, (i - 1) * 50, 50, 100, null);
 				}
 				else if(board[i][j] == 9)
 				{
@@ -159,6 +161,10 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				{
 					g.drawImage(rightUp, j * 50, i * 50, 50, 50, null);
 				}
+				else if(board[i][j] == 8)
+				{
+					g.fillRect(j * 50, i * 50, 50, 50);
+				}
 
 			}
 		}
@@ -178,14 +184,14 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		{
 			g.drawLine((int)w.getX1(), (int)w.getY1(), (int)w.getX2(), (int)w.getY2());
 		}
-		g.drawLine((int)left.getX1(true, true), (int)left.getY1(true, true), (int)left.getX2(true, true), (int)left.getY2(true, true));
-		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
-		g.drawRect(ball.getX(), ball.getY(), 30, 30);
+		
+	//	g.drawLine((int)left.getX1(true, true), (int)left.getY1(true, true), (int)left.getX2(true, true), (int)left.getY2(true, true));
+		
 		
 	}
 	public void actionPerformed(ActionEvent e)
 	{
-		
+
 	}
 	public void keyTyped(KeyEvent e)
 	{
@@ -195,8 +201,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 
 	public void keyPressed(KeyEvent e)
 	{
-		updatePinball();
-		repaint();
+
 		if(e.getKeyCode() == KeyEvent.VK_LEFT)
 			left.leftPosition = true;
 		else if(e.getKeyCode() == KeyEvent.VK_RIGHT)
@@ -217,6 +222,17 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	public void updatePinball()
 	{
 		Rectangle ballRect = ball.getRectangle();
+		if((ballRect.intersects(left.getBounds(true, true)))) //&& left.isLeftPosition())) //|| (ballRect.intersects(right.getBounds(false, true)) && right.isRightPosition()))
+		{
+			ball.changeDirection(false, false, true);
+			ball.dy -= 5;
+			System.out.println("Done");
+		}
+		else if(ballRect.intersects(left.getBounds(false, true)) || ballRect.intersects(right.getBounds(false, false)))
+		{
+			ball.changeDirection(false, false, true);
+			
+		}
 		for(Bumpers b : bumpers)
 		{
 			Rectangle bumpRect = b.getRectangle();
@@ -224,12 +240,8 @@ public class Board extends JFrame implements ActionListener, KeyListener
 			{
 				b.image = b.litBumper;
 				score += 100;
-				boolean vertical = false, horizontal = false;
-				if(ball.getX() - b.x < 5)
-					horizontal = true;
-				if(ball.getY() - b.y < 5)
-					vertical = true;
-				ball.changeDirection(vertical, horizontal, false);
+				ball.dx = -ball.dx;
+				ball.dy = -ball.dy;
 				break;
 			}			
 		}
@@ -237,33 +249,26 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		{
 			if(ballRect.intersectsLine(w.getX1(), w.getY1(), w.getX2(), w.getY2()))
 			{
-				ball.changeDirection(false, false, true);
-				break;
+				int temp = ball.dy;
+				ball.dy = ball.dx;
+				ball.dx = temp;
 			}
 		}
 		for(WallBlock w : wallBlocks)
 		{
 			Rectangle wallRect = w.getRectangle();
-			if(ballRect.intersects(wallRect))
+			if(ballRect.intersects(wallRect) && ball.y - w.getY() < 3)
 			{
-				boolean vertical = false, horizontal = false;
-				if(ball.getX() - w.getX() < 5)
-					horizontal = true;
-				if(ball.getY() - w.getY() < 5)
-					vertical = true;
-				ball.changeDirection(vertical, horizontal, false);
+				ball.dy = -ball.dy;
+				break;
+			}
+			else if(ballRect.intersects(wallRect) && ball.x - w.getX() < 3)
+			{
+				ball.dx = -ball.dx;
 				break;
 			}
 		}
-		if(ballRect.intersectsLine(left.getX1(true, true), left.getY1(true, true), left.getX2(true, true), left.getY2(true, true)) || ballRect.intersectsLine(right.getX1(true, false), right.getY1(true, false), right.getX2(true, false), right.getY2(true, false)))
-		{
-			ball.changeDirection(false, false, true);
-			ball.dy += 20;
-		}
-		else
-		{
-			ball.changeDirection(false, false, true);
-		}
+		
 		ball.move();
 	}
 }

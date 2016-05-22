@@ -9,7 +9,8 @@ public class Main
 		frm.setBackground(Color.white);
 		frm.setSize(600, 1000);
 		frm.setVisible(true);
-		frm.repaint();
+		//while(true)
+			frm.repaint();
 		
 	}
 }
