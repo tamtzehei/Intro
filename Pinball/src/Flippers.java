@@ -113,15 +113,15 @@ public class Flippers
 	public Rectangle getBounds(boolean upDown, boolean leftRight)
 	{
 		if(upDown && leftRight){
-			System.out.println("done");
-			return new Rectangle(200, 500, 50, 35);
+
+			return new Rectangle(200, 800, 50, 35);
 		}
 		else if(upDown)
-			return new Rectangle(300, 500, 50, 35);
+			return new Rectangle(300, 800, 50, 35);
 		else if(leftRight)
-			return new Rectangle(315, 450, 35, 50);
+			return new Rectangle(315, 750, 35, 50);
 		else
-			return new Rectangle(200, 450, 35, 50);
+			return new Rectangle(200, 750, 35, 50);
 		
 	}
 }

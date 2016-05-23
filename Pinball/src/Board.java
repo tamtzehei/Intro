@@ -26,13 +26,13 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	
 	public int board[][] = 
 	{
-		//	{8,8,1,1,1,1,1,1,1,1,8,8},
-    	//	{8,6,3,3,3,3,3,3,3,3,7,8},			
-        //	{1,3,3,4,3,4,3,4,3,3,3,1},
-		//  {1,3,3,3,3,3,3,3,3,1,3,1},
-		//	{1,3,4,3,4,3,4,3,3,1,3,1},
-	    //	{1,3,3,3,3,3,3,3,3,1,3,1},
-		//  {1,3,3,4,3,4,3,4,3,1,3,1},
+			{8,8,13,13,13,13,13,13,13,13,8,8},
+    		{8,6,3,3,3,3,3,3,3,3,7,8},			
+        	{1,3,3,4,3,4,3,4,3,3,3,1},
+		    {1,3,3,3,3,3,3,3,3,14,3,1},
+			{1,3,4,3,4,3,4,3,3,1,3,1},
+	    	{1,3,3,3,3,3,3,3,3,1,3,1},
+		    {1,3,3,4,3,4,3,4,3,1,3,1},
 			{1,3,3,3,3,3,3,3,3,1,3,1},
 			{1,3,4,3,4,3,4,3,3,1,3,1},
 			{1,3,3,3,3,3,3,3,3,1,3,1},
@@ -62,21 +62,21 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ball = new Pinball(200,100);
+		ball = new Pinball(500,875);
 		left = new Flippers(false, 5 * 50, 11 * 50);
 		right = new Flippers(true, 7 * 50, 11 * 50);
 		spring = compressed;
 	}
 	public void initialize()
 	{
-		for(int i = 0; i < 13; i++)
+		for(int i = 0; i < 20; i++)
 		{
 			for(int j = 0; j < 12; j++)
 			{
 				if(board[i][j] == 4)
 					bumpers.add(new Bumpers(j * 50, i * 50));
 				else if(board[i][j] == 1)
-					wallBlocks.add(new WallBlock(j * 50, i * 50));
+					wallBlocks.add(new WallBlock(j * 50, i * 50, false, false));
 				else if(board[i][j] == 6)
 					walls.add(new Wall(j * 50, (i + 1) * 50, (j + 1) * 50, i * 50));
 				else if(board[i][j] == 7)
@@ -85,6 +85,10 @@ public class Board extends JFrame implements ActionListener, KeyListener
 					walls.add(new Wall(j * 50, i * 50, (j + 1) * 50, (i + 1) * 50));
 				else if(board[i][j] == 11)
 					walls.add(new Wall(j * 50, (i + 1) * 50, (j + 1) * 50, i * 50));
+				else if(board[i][j] == 13)
+					wallBlocks.add(new WallBlock(j * 50, i * 50, true, false));
+				else if(board[i][j] == 14)
+					wallBlocks.add(new WallBlock(j * 50, i * 50, true, true));
 			}
 		}
 	}
@@ -92,15 +96,15 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	
 	public void paint(Graphics g)
 	{
-	//	g.clearRect(0, 0, 600, 1000);
+		g.clearRect(0, 0, 600, 1000);
 		updatePinball();
 		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
 		
-		for(int i = 0; i < 13; i++)
+		for(int i = 0; i < 20; i++)
 		{
 			for(int j = 0; j < 12; j++)
 			{
-				if(board[i][j] == 1)
+				if(board[i][j] == 1 || board[i][j] == 13 || board[i][j] == 8 || board[i][j] == 14)
 				{
 					g.setColor(Color.YELLOW);
 					g.fillRect(j * 50, i * 50, 50, 50);
@@ -161,11 +165,6 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				{
 					g.drawImage(rightUp, j * 50, i * 50, 50, 50, null);
 				}
-				else if(board[i][j] == 8)
-				{
-					g.fillRect(j * 50, i * 50, 50, 50);
-				}
-
 			}
 		}
 
@@ -222,7 +221,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	public void updatePinball()
 	{
 		Rectangle ballRect = ball.getRectangle();
-		if((ballRect.intersects(left.getBounds(true, true)))) //&& left.isLeftPosition())) //|| (ballRect.intersects(right.getBounds(false, true)) && right.isRightPosition()))
+		if((ballRect.intersects(left.getBounds(true, true)) && left.isLeftPosition()) || ((ballRect.intersects(right.getBounds(false, true)) && right.isRightPosition())))
 		{
 			ball.changeDirection(false, false, true);
 			ball.dy -= 5;
@@ -252,21 +251,41 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				int temp = ball.dy;
 				ball.dy = ball.dx;
 				ball.dx = temp;
+				break;
 			}
 		}
 		for(WallBlock w : wallBlocks)
 		{
 			Rectangle wallRect = w.getRectangle();
-			if(ballRect.intersects(wallRect) && ball.y - w.getY() < 3)
+			if(ballRect.intersects(wallRect) && w.corner)
+			{
+				if(ball.getY() - w.getY() < 5 && ball.getY() > w.getY())
+				{
+					ball.dy = -ball.dy;
+					break;
+				}
+				else
+				{
+					ball.dx = -ball.dx;
+					break;
+				}
+			}
+				
+			else if(ballRect.intersects(wallRect) && w.orientation)
 			{
 				ball.dy = -ball.dy;
 				break;
 			}
-			else if(ballRect.intersects(wallRect) && ball.x - w.getX() < 3)
+			else if(ballRect.intersects(wallRect) && !w.orientation)
 			{
 				ball.dx = -ball.dx;
 				break;
 			}
+		}
+		Rectangle springRect = new Rectangle(500, 900, 50, 50); 
+		if(ballRect.intersects(springRect) && spring.equals(released))
+		{
+			ball.dy = -40;
 		}
 		
 		ball.move();

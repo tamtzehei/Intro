@@ -28,7 +28,7 @@ public class Pinball
 	{
 		x += dx;
 		y += dy;
-		if(dy < 1)
+		if(dy < 5)
 			dy += 1;
 		
 	}
