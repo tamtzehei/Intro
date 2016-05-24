@@ -15,7 +15,7 @@ public class Pinball
 	{
 		try
 		{
-			pinball = ImageIO.read(getClass().getResourceAsStream("pinball.jpg"));
+			pinball = ImageIO.read(getClass().getResourceAsStream("pinball.png"));
 		} catch(IOException e)
 		{
 			e.printStackTrace();
@@ -28,7 +28,7 @@ public class Pinball
 	{
 		x += dx;
 		y += dy;
-		if(dy < 5)
+		if(dy < 10)
 			dy += 1;
 		
 	}

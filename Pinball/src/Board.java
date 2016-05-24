@@ -18,6 +18,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	ArrayList<Bumpers> bumpers = new ArrayList<Bumpers>();
 	ArrayList<Wall> walls = new ArrayList<Wall>();
 	ArrayList<WallBlock> wallBlocks = new ArrayList<WallBlock>();
+	ArrayList<RedBumper> redBumpers = new ArrayList<RedBumper>();
 	Flippers left, right;
 	static BufferedImage leftDown, leftUp, rightDown, rightUp, compressed, released, spring;
 	Pinball ball;
@@ -29,7 +30,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 			{8,8,13,13,13,13,13,13,13,13,8,8},
     		{8,6,3,3,3,3,3,3,3,3,7,8},			
         	{1,3,3,4,3,4,3,4,3,3,3,1},
-		    {1,3,3,3,3,3,3,3,3,14,3,1},
+		    {1,3,3,3,3,3,3,3,3,1,3,1},
 			{1,3,4,3,4,3,4,3,3,1,3,1},
 	    	{1,3,3,3,3,3,3,3,3,1,3,1},
 		    {1,3,3,4,3,4,3,4,3,1,3,1},
@@ -89,6 +90,8 @@ public class Board extends JFrame implements ActionListener, KeyListener
 					wallBlocks.add(new WallBlock(j * 50, i * 50, true, false));
 				else if(board[i][j] == 14)
 					wallBlocks.add(new WallBlock(j * 50, i * 50, true, true));
+				else if(board[i][j] == 9)
+					redBumpers.add(new RedBumper(j * 50, i * 50));
 			}
 		}
 	}
@@ -98,13 +101,13 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	{
 		g.clearRect(0, 0, 600, 1000);
 		updatePinball();
-		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
+		
 		
 		for(int i = 0; i < 20; i++)
 		{
 			for(int j = 0; j < 12; j++)
 			{
-				if(board[i][j] == 1 || board[i][j] == 13 || board[i][j] == 8 || board[i][j] == 14)
+				if(board[i][j] == 8)
 				{
 					g.setColor(Color.YELLOW);
 					g.fillRect(j * 50, i * 50, 50, 50);
@@ -177,13 +180,17 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		}
 		for(WallBlock w : wallBlocks)
 		{
+			g.setColor(Color.GREEN);
 			g.drawRect(w.getX(), w.getY(), 50, 50);
+			g.setColor(Color.YELLOW);
+			g.fillRect(w.getX(), w.getY(), 50, 50);
 		}
 		for(Wall w : walls)
 		{
+			g.setColor(Color.GREEN);
 			g.drawLine((int)w.getX1(), (int)w.getY1(), (int)w.getX2(), (int)w.getY2());
 		}
-		
+		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
 	//	g.drawLine((int)left.getX1(true, true), (int)left.getY1(true, true), (int)left.getX2(true, true), (int)left.getY2(true, true));
 		
 		
@@ -207,7 +214,11 @@ public class Board extends JFrame implements ActionListener, KeyListener
 			right.rightPosition = true;
 		else if(e.getKeyCode() == KeyEvent.VK_SPACE)
 			spring = released;
-
+		if(ball.getX() < 420)
+		{
+			wallBlocks.add(new WallBlock(450, 50, false, false));
+			wallBlocks.add(new WallBlock(450, 100, false, false));
+		}
 		repaint();
 	}
 
@@ -224,7 +235,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		if((ballRect.intersects(left.getBounds(true, true)) && left.isLeftPosition()) || ((ballRect.intersects(right.getBounds(false, true)) && right.isRightPosition())))
 		{
 			ball.changeDirection(false, false, true);
-			ball.dy -= 5;
+			ball.dy -= 15;
 			System.out.println("Done");
 		}
 		else if(ballRect.intersects(left.getBounds(false, true)) || ballRect.intersects(right.getBounds(false, false)))
@@ -240,7 +251,8 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				b.image = b.litBumper;
 				score += 100;
 				ball.dx = -ball.dx;
-				ball.dy = -ball.dy;
+			//	if(ball.getY() > b.y)
+				//	ball.dy = -ball.dy;
 				break;
 			}			
 		}
@@ -250,8 +262,8 @@ public class Board extends JFrame implements ActionListener, KeyListener
 			{
 				int temp = ball.dy;
 				ball.dy = ball.dx;
-				ball.dx = temp;
-				break;
+				ball.dx = -temp;
+				
 			}
 		}
 		for(WallBlock w : wallBlocks)
@@ -259,7 +271,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 			Rectangle wallRect = w.getRectangle();
 			if(ballRect.intersects(wallRect) && w.corner)
 			{
-				if(ball.getY() - w.getY() < 5 && ball.getY() > w.getY())
+				if(ball.getY() > 100 && ball.getY() < 150)
 				{
 					ball.dy = -ball.dy;
 					break;
@@ -282,10 +294,17 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				break;
 			}
 		}
+		for(RedBumper r : redBumpers)
+		{
+			if(ballRect.intersects(r.getRectangle()))
+			{
+		
+			}
+		}
 		Rectangle springRect = new Rectangle(500, 900, 50, 50); 
 		if(ballRect.intersects(springRect) && spring.equals(released))
 		{
-			ball.dy = -40;
+			ball.dy = -41;
 		}
 		
 		ball.move();
