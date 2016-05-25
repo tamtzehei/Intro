@@ -4,7 +4,7 @@ import java.awt.Rectangle;
 public class WallBlock
 {
 	int x, y;
-	boolean orientation, corner;
+	boolean orientation;
 	/**
 	 * 
 	 * @param x
@@ -14,12 +14,12 @@ public class WallBlock
 	 * @param corner
 	 * 				- true for corner
 	 */
-	public WallBlock(int x, int y, boolean orientation, boolean corner)
+	public WallBlock(int x, int y, boolean orientation)
 	{
 		this.x = x;
 		this.y = y;
 		this.orientation = orientation; 
-		this.corner = corner;
+
 	}
 	public int getX() {
 		return x;

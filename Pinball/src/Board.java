@@ -77,7 +77,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				if(board[i][j] == 4)
 					bumpers.add(new Bumpers(j * 50, i * 50));
 				else if(board[i][j] == 1)
-					wallBlocks.add(new WallBlock(j * 50, i * 50, false, false));
+					wallBlocks.add(new WallBlock(j * 50, i * 50, false));
 				else if(board[i][j] == 6)
 					walls.add(new Wall(j * 50, (i + 1) * 50, (j + 1) * 50, i * 50));
 				else if(board[i][j] == 7)
@@ -87,9 +87,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 				else if(board[i][j] == 11)
 					walls.add(new Wall(j * 50, (i + 1) * 50, (j + 1) * 50, i * 50));
 				else if(board[i][j] == 13)
-					wallBlocks.add(new WallBlock(j * 50, i * 50, true, false));
-				else if(board[i][j] == 14)
-					wallBlocks.add(new WallBlock(j * 50, i * 50, true, true));
+					wallBlocks.add(new WallBlock(j * 50, i * 50, true));
 				else if(board[i][j] == 9)
 					redBumpers.add(new RedBumper(j * 50, i * 50));
 			}
@@ -99,7 +97,7 @@ public class Board extends JFrame implements ActionListener, KeyListener
 	
 	public void paint(Graphics g)
 	{
-		g.clearRect(0, 0, 600, 1000);
+	//	g.clearRect(0, 0, 600, 1000);
 		updatePinball();
 		
 		
@@ -216,8 +214,8 @@ public class Board extends JFrame implements ActionListener, KeyListener
 			spring = released;
 		if(ball.getX() < 420)
 		{
-			wallBlocks.add(new WallBlock(450, 50, false, false));
-			wallBlocks.add(new WallBlock(450, 100, false, false));
+			wallBlocks.add(new WallBlock(450, 50, false));
+			wallBlocks.add(new WallBlock(450, 100, false));
 		}
 		repaint();
 	}
@@ -260,37 +258,24 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		{
 			if(ballRect.intersectsLine(w.getX1(), w.getY1(), w.getX2(), w.getY2()))
 			{
-				int temp = ball.dy;
-				ball.dy = ball.dx;
-				ball.dx = -temp;
+				int temp = ball.getDy();
+				ball.setDy(ball.getDx());
+				ball.setDx(temp);
 				
 			}
 		}
 		for(WallBlock w : wallBlocks)
 		{
 			Rectangle wallRect = w.getRectangle();
-			if(ballRect.intersects(wallRect) && w.corner)
+			
+			if(ballRect.intersects(wallRect) && w.orientation)
 			{
-				if(ball.getY() > 100 && ball.getY() < 150)
-				{
-					ball.dy = -ball.dy;
-					break;
-				}
-				else
-				{
-					ball.dx = -ball.dx;
-					break;
-				}
-			}
-				
-			else if(ballRect.intersects(wallRect) && w.orientation)
-			{
-				ball.dy = -ball.dy;
+				ball.setDy(-ball.getDy());
 				break;
 			}
 			else if(ballRect.intersects(wallRect) && !w.orientation)
 			{
-				ball.dx = -ball.dx;
+				ball.setDx(-ball.getDx());
 				break;
 			}
 		}
@@ -298,13 +283,14 @@ public class Board extends JFrame implements ActionListener, KeyListener
 		{
 			if(ballRect.intersects(r.getRectangle()))
 			{
-		
+				ball.setDy(-ball.getDy());
+				ball.setDx(-ball.getDx());
 			}
 		}
 		Rectangle springRect = new Rectangle(500, 900, 50, 50); 
 		if(ballRect.intersects(springRect) && spring.equals(released))
 		{
-			ball.dy = -41;
+			ball.setDy(-41);
 		}
 		
 		ball.move();
