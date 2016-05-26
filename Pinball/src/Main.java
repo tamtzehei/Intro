@@ -7,7 +7,7 @@ public class Main
 	{
 		Frame frm = new Board();
 		frm.setBackground(Color.white);
-		frm.setSize(600, 1000);
+		frm.setSize(800, 1000);
 		frm.setVisible(true);
 		while(true)
 			frm.repaint();

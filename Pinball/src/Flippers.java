@@ -65,51 +65,7 @@ public class Flippers
 		else
 			return rightFlipperDown;
 	}
-	
-	/*public double getX1(boolean upDown, boolean leftRight)
-	{
-		if(upDown && leftRight)
-			return 200;
-		else if(upDown)
-			return 350;
-		else if(leftRight)
-			return 200;
-		else 
-			return 350;
-	}
-	public double getY1(boolean upDown, boolean leftRight)
-	{
-		if(upDown && leftRight)
-			return 850;
-		else if(upDown)
-			return 850;
-		else if(leftRight)
-			return 850;
-		else 
-			return 850;
-	}
-	public double getX2(boolean upDown, boolean leftRight)
-	{
-		if(upDown && leftRight)
-			return 200;
-		else if(upDown)
-			return 350;
-		else if(leftRight)
-			return 200;
-		else 
-			return 350;
-	}
-	public double getY2(boolean upDown, boolean leftRight)
-	{
-		if(upDown && leftRight)
-			return 750;
-		else if(upDown)
-			return 750;
-		else if(leftRight)
-			return 875;
-		else 
-			return 875;
-	}*/
+
 	public Rectangle getBounds(boolean upDown, boolean leftRight)
 	{
 		if(upDown && leftRight){

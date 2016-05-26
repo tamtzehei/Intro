@@ -22,8 +22,8 @@ public class Board extends JFrame implements KeyListener
 	Flippers left, right;
 	static BufferedImage leftDown, leftUp, rightDown, rightUp, compressed, released, spring;
 	Pinball ball;
-	int score, ballsLeft;
-
+	int score, ballsLeft, speed;
+	boolean first;
 	
 	public int board[][] = 
 	{
@@ -39,8 +39,8 @@ public class Board extends JFrame implements KeyListener
 			{1,3,3,3,3,3,3,3,3,1,3,1},
 			{8,2,3,3,3,3,3,3,3,1,3,1},
 			{8,1,3,3,3,3,3,3,3,1,3,1},
-			{8,1,3,9,3,3,3,9,3,1,3,1},
-			{8,1,3,9,3,3,3,9,3,1,3,1},
+			{8,1,3,3,3,3,3,3,3,1,3,1},
+			{8,1,3,3,3,3,3,3,3,1,3,1},
 			{8,1,3,3,3,3,3,3,3,1,3,1},
 			{8,8,2,3,3,3,3,3,11,1,3,1},
 			{8,8,8,2,3,3,3,11,8,1,3,1},
@@ -52,7 +52,7 @@ public class Board extends JFrame implements KeyListener
 	public Board()
 	{
 		addKeyListener(this);
-		initialize();
+
 		try {
 			leftDown = ImageIO.read(getClass().getResourceAsStream("triangleleftdown.png"));
 			leftUp = ImageIO.read(getClass().getResourceAsStream("triangleleftup.png"));
@@ -65,7 +65,7 @@ public class Board extends JFrame implements KeyListener
 		}
 		initialize();
 		
-		ballsLeft = 3;
+		
 	}
 	public void initialize()
 	{
@@ -93,6 +93,21 @@ public class Board extends JFrame implements KeyListener
 				left = new Flippers(false, 5 * 50, 11 * 50);
 				right = new Flippers(true, 7 * 50, 11 * 50);
 				ball = new Pinball(500, 875);
+				ballsLeft = 3;
+				first = true;
+				score = 0;
+				
+				double rand = Math.random();
+				if(rand < .2)
+					speed = 41;
+				else if(rand <.4)
+					speed = 42;
+				else if(rand < .6)
+					speed = 43;
+				else if(rand < .8)
+					speed = 44;
+				else
+					speed = 45;
 			}
 		}
 	}
@@ -108,7 +123,7 @@ public class Board extends JFrame implements KeyListener
 	
 	public void paintGame(Graphics g)
 	{
-		g.clearRect(0, 0, 600, 1000);
+		g.clearRect(0, 0, 800, 1000);
 		
 		
 		for(int i = 0; i < 20; i++)
@@ -199,6 +214,7 @@ public class Board extends JFrame implements KeyListener
 			g.drawLine((int)w.getX1(), (int)w.getY1(), (int)w.getX2(), (int)w.getY2());
 		}
 		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
+		g.drawString(((Integer)score).toString(), 700, 500);
 	//	g.drawLine((int)left.getX1(true, true), (int)left.getY1(true, true), (int)left.getX2(true, true), (int)left.getY2(true, true));
 	}
 	public void paintGameOver(Graphics g)
@@ -290,27 +306,46 @@ public class Board extends JFrame implements KeyListener
 		{
 			if(ballRect.intersects(r.getRectangle()))
 			{
-				ball.setDy(-(ball.getDy() + 10));
-				ball.setDx(-(ball.getDx() + 10));
+				ball.setDy(-1 * (ball.getDy() + 10));
+				ball.setDx(-1 * (ball.getDx() + 10));
 			}
 		}
 		Rectangle springRect = new Rectangle(500, 900, 50, 50); 
 		if(ballRect.intersects(springRect) && spring.equals(released))
 		{
-			ball.setDy(-41);
+			
+			ball.setDy(-speed);
 		}
 		else if(ballRect.intersects(springRect))
 			ball.setDy(0);
-		if(ball.getX() < 420)
+		if(ball.getX() < 420 && first)
 		{
 			wallBlocks.add(new WallBlock(450, 50, false));
 			wallBlocks.add(new WallBlock(450, 100, false));
+			first = false;
 		}
 		if(ball.getY() > 1000)
 		{
 			ballsLeft--;
 			ball.setX(500);
 			ball.setY(875);
+			ball.setDx(0);
+			ball.setDy(0);
+			wallBlocks.remove(wallBlocks.size() - 1);
+			wallBlocks.remove(wallBlocks.size() - 1);
+			first = true;
+			
+			double rand = Math.random();
+			if(rand < .2)
+				speed = 41;
+			else if(rand <.4)
+				speed = 42;
+			else if(rand < .6)
+				speed = 43;
+			else if(rand < .8)
+				speed = 44;
+			else
+				speed = 45;
 		}
 		ball.move();
 		

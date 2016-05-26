@@ -31,6 +31,10 @@ public class Pinball
 		y += dy;
 		if(dy < 5)
 			dy += 1;
+		if(dx > 5)
+			dx--;
+		else if(dx < -5)
+			dx++;
 		
 	}
 	/**
