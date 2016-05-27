@@ -68,10 +68,8 @@ public class Flippers
 
 	public Rectangle getBounds(boolean upDown, boolean leftRight)
 	{
-		if(upDown && leftRight){
-
+		if(upDown && leftRight)
 			return new Rectangle(200, 800, 50, 35);
-		}
 		else if(upDown)
 			return new Rectangle(300, 800, 50, 35);
 		else if(leftRight)

@@ -23,7 +23,7 @@ public class Board extends JFrame implements KeyListener
 	static BufferedImage leftDown, leftUp, rightDown, rightUp, compressed, released, spring;
 	Pinball ball;
 	int score, ballsLeft, speed;
-	boolean first;
+	boolean first, cornerChange, verticalChange, horizontalChange;
 	
 	public int board[][] = 
 	{
@@ -37,15 +37,15 @@ public class Board extends JFrame implements KeyListener
 			{1,3,3,3,3,3,3,3,3,1,3,1},
 			{1,3,4,3,4,3,4,3,3,1,3,1},
 			{1,3,3,3,3,3,3,3,3,1,3,1},
-			{8,2,3,3,3,3,3,3,3,1,3,1},
+			{9,2,3,3,3,3,3,3,3,1,3,1},
 			{8,1,3,3,3,3,3,3,3,1,3,1},
 			{8,1,3,3,3,3,3,3,3,1,3,1},
 			{8,1,3,3,3,3,3,3,3,1,3,1},
 			{8,1,3,3,3,3,3,3,3,1,3,1},
-			{8,8,2,3,3,3,3,3,11,1,3,1},
-			{8,8,8,2,3,3,3,11,8,1,3,1},
+			{8,1,2,3,3,3,3,3,11,1,3,1},
+			{8,9,8,2,3,3,3,11,9,1,3,1},
 			{8,8,8,1,5,3,10,1,8,1,3,1},
-			{8,8,8,8,2,3,11,8,8,1,12,1},
+			{8,8,8,1,2,3,11,1,8,1,12,1},
 			{8,8,8,8,1,3,1,8,8,8,1,8},
 	};
 	
@@ -84,7 +84,7 @@ public class Board extends JFrame implements KeyListener
 				else if(board[i][j] == 2)
 					walls.add(new Wall(j * 50, i * 50, (j + 1) * 50, (i + 1) * 50));
 				else if(board[i][j] == 11)
-					walls.add(new Wall(j * 50, (i + 1) * 50, (j + 1) * 50, i * 50));
+					walls.add(new Wall((j + 1) * 50, i * 50, j * 50, (i + 1) * 50));
 				else if(board[i][j] == 13)
 					wallBlocks.add(new WallBlock(j * 50, i * 50, true));
 				else if(board[i][j] == 9)
@@ -96,6 +96,9 @@ public class Board extends JFrame implements KeyListener
 				ballsLeft = 3;
 				first = true;
 				score = 0;
+				cornerChange = false;
+				verticalChange = false;
+				horizontalChange = false;
 				
 				double rand = Math.random();
 				if(rand < .2)
@@ -171,7 +174,7 @@ public class Board extends JFrame implements KeyListener
 				}
 				else if(board[i][j] == 9)
 				{
-					g.setColor(Color.red);
+					g.setColor(Color.yellow);
 					g.fillRect(j * 50, i * 50, 50, 50);
 				}
 				else if(board[i][j] == 10)
@@ -198,24 +201,15 @@ public class Board extends JFrame implements KeyListener
 		{
 			g.drawImage(b.getImage(), b.x, b.y, 50, 50, null);
 			b.image = b.bumper;
-			g.setColor(Color.GREEN);
-			g.drawRect(b.x, b.y, 50, 50);
 		}
 		for(WallBlock w : wallBlocks)
 		{
-			g.setColor(Color.GREEN);
-			g.drawRect(w.getX(), w.getY(), 50, 50);
 			g.setColor(Color.YELLOW);
 			g.fillRect(w.getX(), w.getY(), 50, 50);
 		}
-		for(Wall w : walls)
-		{
-			g.setColor(Color.GREEN);
-			g.drawLine((int)w.getX1(), (int)w.getY1(), (int)w.getX2(), (int)w.getY2());
-		}
 		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
+		g.setColor(Color.BLACK);
 		g.drawString(((Integer)score).toString(), 700, 500);
-	//	g.drawLine((int)left.getX1(true, true), (int)left.getY1(true, true), (int)left.getX2(true, true), (int)left.getY2(true, true));
 	}
 	public void paintGameOver(Graphics g)
 	{
@@ -234,10 +228,9 @@ public class Board extends JFrame implements KeyListener
 		if(e.getKeyCode() == KeyEvent.VK_LEFT)
 			left.leftPosition = true;
 		else if(e.getKeyCode() == KeyEvent.VK_RIGHT)
-			right.rightPosition = true;
+			right.rightPosition = true;	
 		else if(e.getKeyCode() == KeyEvent.VK_SPACE)
 			spring = released;
-		
 		repaint();
 	}
 
@@ -251,20 +244,36 @@ public class Board extends JFrame implements KeyListener
 	public void updatePinball()
 	{
 		Rectangle ballRect = ball.getRectangle();
+		Rectangle futureRect = new Rectangle(ball.getX() + ball.getDx(), ball.getY() + ball.getDy(), 30, 30);
+		
 		if((ballRect.intersects(left.getBounds(true, true)) && left.isLeftPosition()) || ((ballRect.intersects(right.getBounds(false, true)) && right.isRightPosition())))
 		{
 			ball.changeDirection(false, false, true);
 			ball.dy -= 15;
-			System.out.println("Done");
 		}
+		
 		else if(ballRect.intersects(left.getBounds(false, true)) || ballRect.intersects(right.getBounds(false, false)))
 		{
 			ball.changeDirection(false, false, true);
 			
 		}
+		for(Wall w : walls)
+		{
+			if(ballRect.intersectsLine(w.getX1(), w.getY1(), w.getX2(), w.getY2()))
+			{
+				int temp = ball.getDy();
+				ball.setDy(ball.getDx());
+				ball.setDx(temp);
+			}
+			else if(futureRect.intersectsLine(w.getX1(), w.getY1(), w.getX2(), w.getY2()))
+			{
+				cornerChange = true;
+			}
+		}
 		for(Bumpers b : bumpers)
 		{
 			Rectangle bumpRect = b.getRectangle();
+			
 			if(bumpRect.intersects(ballRect))
 			{
 				b.image = b.litBumper;
@@ -277,16 +286,7 @@ public class Board extends JFrame implements KeyListener
 				break;
 			}			
 		}
-		for(Wall w : walls)
-		{
-			if(ballRect.intersectsLine(w.getX1(), w.getY1(), w.getX2(), w.getY2()))
-			{
-				int temp = ball.getDy();
-				ball.setDy(ball.getDx());
-				ball.setDx(temp);
-				
-			}
-		}
+		
 		for(WallBlock w : wallBlocks)
 		{
 			Rectangle wallRect = w.getRectangle();
@@ -301,13 +301,22 @@ public class Board extends JFrame implements KeyListener
 				ball.setDx(-ball.getDx());
 				break;
 			}
+			else if(futureRect.intersects(wallRect) && w.orientation)
+			{
+				horizontalChange = true;
+			}
+			else if(futureRect.intersects(wallRect) && !w.orientation)
+			{
+				verticalChange = true;
+			}
+				
 		}
 		for(RedBumper r : redBumpers)
 		{
 			if(ballRect.intersects(r.getRectangle()))
 			{
-				ball.setDy(-1 * (ball.getDy() + 10));
-				ball.setDx(-1 * (ball.getDx() + 10));
+				ball.setDy(-1 * (ball.getDy() + 5));
+				ball.setDx(-1 * (ball.getDx() + 5));
 			}
 		}
 		Rectangle springRect = new Rectangle(500, 900, 50, 50); 
@@ -324,7 +333,7 @@ public class Board extends JFrame implements KeyListener
 			wallBlocks.add(new WallBlock(450, 100, false));
 			first = false;
 		}
-		if(ball.getY() > 1000)
+		if(ball.getY() > 900)
 		{
 			ballsLeft--;
 			ball.setX(500);

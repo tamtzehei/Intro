@@ -10,7 +10,9 @@ public class Main
 		frm.setSize(800, 1000);
 		frm.setVisible(true);
 		while(true)
+		{
 			frm.repaint();
-		
+			
+		}	
 	}
 }
