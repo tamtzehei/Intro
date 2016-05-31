@@ -22,8 +22,8 @@ public class Board extends JFrame implements KeyListener
 	Flippers left, right;
 	static BufferedImage leftDown, leftUp, rightDown, rightUp, compressed, released, spring;
 	Pinball ball;
-	int score, ballsLeft, speed;
-	boolean first, cornerChange, verticalChange, horizontalChange;
+	int score, ballsLeft, speed, count;
+	boolean first;
 	
 	public int board[][] = 
 	{
@@ -38,15 +38,15 @@ public class Board extends JFrame implements KeyListener
 			{1,3,4,3,4,3,4,3,3,1,3,1},
 			{1,3,3,3,3,3,3,3,3,1,3,1},
 			{9,2,3,3,3,3,3,3,3,1,3,1},
-			{8,1,3,3,3,3,3,3,3,1,3,1},
-			{8,1,3,3,3,3,3,3,3,1,3,1},
-			{8,1,3,3,3,3,3,3,3,1,3,1},
-			{8,1,3,3,3,3,3,3,3,1,3,1},
-			{8,1,2,3,3,3,3,3,11,1,3,1},
-			{8,9,8,2,3,3,3,11,9,1,3,1},
-			{8,8,8,1,5,3,10,1,8,1,3,1},
-			{8,8,8,1,2,3,11,1,8,1,12,1},
-			{8,8,8,8,1,3,1,8,8,8,1,8},
+			{9,1,3,3,3,3,3,3,3,1,3,1},
+			{9,1,3,3,3,3,3,3,3,1,3,1},
+			{9,1,3,3,3,3,3,3,3,1,3,1},
+			{9,1,3,3,3,3,3,3,3,1,3,1},
+			{9,1,2,3,3,3,3,3,11,1,3,1},
+			{8,9,9,2,3,3,3,11,9,1,3,1},
+			{8,8,9,1,5,3,10,1,8,1,3,1},
+			{8,8,9,1,2,3,11,1,8,1,12,1},
+			{8,8,8,9,1,3,1,9,8,8,1,8},
 	};
 	
 	public Board()
@@ -63,9 +63,8 @@ public class Board extends JFrame implements KeyListener
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		initialize();
 		
-		
+		initialize();		
 	}
 	public void initialize()
 	{
@@ -77,6 +76,7 @@ public class Board extends JFrame implements KeyListener
 					bumpers.add(new Bumpers(j * 50, i * 50));
 				else if(board[i][j] == 1)
 					wallBlocks.add(new WallBlock(j * 50, i * 50, false));
+				
 				else if(board[i][j] == 6)
 					walls.add(new Wall(j * 50, (i + 1) * 50, (j + 1) * 50, i * 50));
 				else if(board[i][j] == 7)
@@ -87,32 +87,33 @@ public class Board extends JFrame implements KeyListener
 					walls.add(new Wall((j + 1) * 50, i * 50, j * 50, (i + 1) * 50));
 				else if(board[i][j] == 13)
 					wallBlocks.add(new WallBlock(j * 50, i * 50, true));
-				else if(board[i][j] == 9)
-					redBumpers.add(new RedBumper(j * 50, i * 50));
-				spring = compressed;
-				left = new Flippers(false, 5 * 50, 11 * 50);
-				right = new Flippers(true, 7 * 50, 11 * 50);
-				ball = new Pinball(500, 875);
-				ballsLeft = 3;
-				first = true;
-				score = 0;
-				cornerChange = false;
-				verticalChange = false;
-				horizontalChange = false;
+					
 				
-				double rand = Math.random();
-				if(rand < .2)
-					speed = 41;
-				else if(rand <.4)
-					speed = 42;
-				else if(rand < .6)
-					speed = 43;
-				else if(rand < .8)
-					speed = 44;
-				else
-					speed = 45;
+				else if(board[i][j] == 9)
+					redBumpers.add(new RedBumper(j * 50, i * 50));		
 			}
 		}
+		spring = compressed;
+		left = new Flippers(false, 5 * 50, 11 * 50);
+		right = new Flippers(true, 7 * 50, 11 * 50);
+		ball = new Pinball(500, 875);
+		ballsLeft = 3;
+		first = true;
+		score = 0;
+		
+		double rand = Math.random();
+		if(rand < .2)
+			speed = 41;
+		else if(rand <.4)
+			speed = 42;
+		else if(rand < .6)
+			speed = 43;
+		else if(rand < .8)
+			speed = 44;
+		else
+			speed = 45;
+		
+		System.out.println(wallBlocks.size());
 	}
 	
 	public void paint(Graphics g)
@@ -127,7 +128,9 @@ public class Board extends JFrame implements KeyListener
 	public void paintGame(Graphics g)
 	{
 		g.clearRect(0, 0, 800, 1000);
-		
+		g.drawString("N for next ball", 650, 100);
+		g.drawString("R for restart", 650, 150);
+		g.drawString("Balls Left: " + ballsLeft, 650, 200);
 		
 		for(int i = 0; i < 20; i++)
 		{
@@ -231,6 +234,54 @@ public class Board extends JFrame implements KeyListener
 			right.rightPosition = true;	
 		else if(e.getKeyCode() == KeyEvent.VK_SPACE)
 			spring = released;
+		else if(e.getKeyCode() == KeyEvent.VK_N)
+		{
+			ballsLeft--;
+			ball.setX(500);
+			ball.setY(875);
+			ball.setDx(0);
+			ball.setDy(0);
+			wallBlocks.remove(wallBlocks.size() - 1);
+			wallBlocks.remove(wallBlocks.size() - 1);
+			first = true;
+			
+			double rand = Math.random();
+			if(rand < .2)
+				speed = 41;
+			else if(rand <.4)
+				speed = 42;
+			else if(rand < .6)
+				speed = 43;
+			else if(rand < .8)
+				speed = 44;
+			else
+				speed = 45;
+		}
+		else if(e.getKeyCode() == KeyEvent.VK_R)
+		{
+			spring = compressed;
+			ballsLeft = 3;
+			first = true;
+			score = 0;
+			ball.setX(500);
+			ball.setY(875);
+			ball.setDx(0);
+			ball.setDy(0);
+			wallBlocks.remove(wallBlocks.size() - 1);
+			wallBlocks.remove(wallBlocks.size() - 1);
+			
+			double rand = Math.random();
+			if(rand < .2)
+				speed = 41;
+			else if(rand <.4)
+				speed = 42;
+			else if(rand < .6)
+				speed = 43;
+			else if(rand < .8)
+				speed = 44;
+			else
+				speed = 45;
+		}
 		repaint();
 	}
 
@@ -244,12 +295,11 @@ public class Board extends JFrame implements KeyListener
 	public void updatePinball()
 	{
 		Rectangle ballRect = ball.getRectangle();
-		Rectangle futureRect = new Rectangle(ball.getX() + ball.getDx(), ball.getY() + ball.getDy(), 30, 30);
 		
 		if((ballRect.intersects(left.getBounds(true, true)) && left.isLeftPosition()) || ((ballRect.intersects(right.getBounds(false, true)) && right.isRightPosition())))
 		{
 			ball.changeDirection(false, false, true);
-			ball.dy -= 15;
+			ball.dy -= 25;
 		}
 		
 		else if(ballRect.intersects(left.getBounds(false, true)) || ballRect.intersects(right.getBounds(false, false)))
@@ -264,10 +314,6 @@ public class Board extends JFrame implements KeyListener
 				int temp = ball.getDy();
 				ball.setDy(ball.getDx());
 				ball.setDx(temp);
-			}
-			else if(futureRect.intersectsLine(w.getX1(), w.getY1(), w.getX2(), w.getY2()))
-			{
-				cornerChange = true;
 			}
 		}
 		for(Bumpers b : bumpers)
@@ -301,15 +347,6 @@ public class Board extends JFrame implements KeyListener
 				ball.setDx(-ball.getDx());
 				break;
 			}
-			else if(futureRect.intersects(wallRect) && w.orientation)
-			{
-				horizontalChange = true;
-			}
-			else if(futureRect.intersects(wallRect) && !w.orientation)
-			{
-				verticalChange = true;
-			}
-				
 		}
 		for(RedBumper r : redBumpers)
 		{
@@ -333,7 +370,7 @@ public class Board extends JFrame implements KeyListener
 			wallBlocks.add(new WallBlock(450, 100, false));
 			first = false;
 		}
-		if(ball.getY() > 900)
+		if(ball.getY() > 1000)
 		{
 			ballsLeft--;
 			ball.setX(500);
@@ -356,6 +393,7 @@ public class Board extends JFrame implements KeyListener
 			else
 				speed = 45;
 		}
+		
 		ball.move();
 		
 	}
