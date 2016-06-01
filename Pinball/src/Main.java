@@ -4,7 +4,7 @@ import java.awt.Frame;
 public class Main 
 {
 	public static void main(String[] args)
-	{
+	{	
 		Frame frm = new Board();
 		frm.setBackground(Color.white);
 		frm.setSize(800, 1000);

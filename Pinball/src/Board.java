@@ -42,7 +42,7 @@ public class Board extends JFrame implements KeyListener
 			{9,1,3,3,3,3,3,3,3,1,3,1},
 			{9,1,3,3,3,3,3,3,3,1,3,1},
 			{9,1,3,3,3,3,3,3,3,1,3,1},
-			{9,1,2,3,3,3,3,3,11,1,3,1},
+			{8,9,2,3,3,3,3,3,11,1,3,1},
 			{8,9,9,2,3,3,3,11,9,1,3,1},
 			{8,8,9,1,5,3,10,1,8,1,3,1},
 			{8,8,9,1,2,3,11,1,8,1,12,1},
@@ -87,8 +87,6 @@ public class Board extends JFrame implements KeyListener
 					walls.add(new Wall((j + 1) * 50, i * 50, j * 50, (i + 1) * 50));
 				else if(board[i][j] == 13)
 					wallBlocks.add(new WallBlock(j * 50, i * 50, true));
-					
-				
 				else if(board[i][j] == 9)
 					redBumpers.add(new RedBumper(j * 50, i * 50));		
 			}
@@ -127,10 +125,8 @@ public class Board extends JFrame implements KeyListener
 	
 	public void paintGame(Graphics g)
 	{
-		g.clearRect(0, 0, 800, 1000);
-		g.drawString("N for next ball", 650, 100);
-		g.drawString("R for restart", 650, 150);
-		g.drawString("Balls Left: " + ballsLeft, 650, 200);
+		g.clearRect(0, 0, 600, 1000);
+		
 		
 		for(int i = 0; i < 20; i++)
 		{
@@ -198,6 +194,10 @@ public class Board extends JFrame implements KeyListener
 					g.drawImage(rightUp, j * 50, i * 50, 50, 50, null);
 				}
 			}
+			g.setColor(Color.BLACK);
+			g.drawString("Score: " + ((Integer)score).toString(), 650, 500);
+			g.drawString("N for next ball", 650, 100);
+			g.drawString("R for restart", 650, 150);
 		}
 
 		for(Bumpers b : bumpers)
@@ -211,13 +211,20 @@ public class Board extends JFrame implements KeyListener
 			g.fillRect(w.getX(), w.getY(), 50, 50);
 		}
 		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
-		g.setColor(Color.BLACK);
-		g.drawString(((Integer)score).toString(), 700, 500);
+		paintScore(g);
 	}
 	public void paintGameOver(Graphics g)
 	{
+		paintScore(g);
 		g.setColor(Color.BLACK);
 		g.drawString("Game Over", 250, 500);
+		
+	}
+	public void paintScore(Graphics g)
+	{
+		g.clearRect(600, 0, 200, 1000);
+		g.setColor(Color.BLACK);
+		g.drawString("Balls Left: " + ballsLeft, 650, 200);
 	}
 	public void keyTyped(KeyEvent e)
 	{
@@ -267,8 +274,6 @@ public class Board extends JFrame implements KeyListener
 			ball.setY(875);
 			ball.setDx(0);
 			ball.setDy(0);
-			wallBlocks.remove(wallBlocks.size() - 1);
-			wallBlocks.remove(wallBlocks.size() - 1);
 			
 			double rand = Math.random();
 			if(rand < .2)
@@ -299,7 +304,7 @@ public class Board extends JFrame implements KeyListener
 		if((ballRect.intersects(left.getBounds(true, true)) && left.isLeftPosition()) || ((ballRect.intersects(right.getBounds(false, true)) && right.isRightPosition())))
 		{
 			ball.changeDirection(false, false, true);
-			ball.dy -= 25;
+			ball.dy -= 30;
 		}
 		
 		else if(ballRect.intersects(left.getBounds(false, true)) || ballRect.intersects(right.getBounds(false, false)))
@@ -354,6 +359,7 @@ public class Board extends JFrame implements KeyListener
 			{
 				ball.setDy(-1 * (ball.getDy() + 5));
 				ball.setDx(-1 * (ball.getDx() + 5));
+				
 			}
 		}
 		Rectangle springRect = new Rectangle(500, 900, 50, 50); 
