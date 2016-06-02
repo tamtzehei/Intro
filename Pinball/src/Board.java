@@ -125,8 +125,12 @@ public class Board extends JFrame implements KeyListener
 	
 	public void paintGame(Graphics g)
 	{
-		g.clearRect(0, 0, 600, 1000);
-		
+		g.clearRect(0, 0, 800, 1000);
+		g.setColor(Color.BLACK);
+		g.drawString("N for next ball", 650, 100);
+		g.drawString("R for restart", 650, 150);
+		g.drawString("Balls Left: " + ballsLeft, 650, 200);
+		g.drawString("Score: " + ((Integer)score).toString(), 650, 500);	
 		
 		for(int i = 0; i < 20; i++)
 		{
@@ -194,10 +198,6 @@ public class Board extends JFrame implements KeyListener
 					g.drawImage(rightUp, j * 50, i * 50, 50, 50, null);
 				}
 			}
-			g.setColor(Color.BLACK);
-			g.drawString("Score: " + ((Integer)score).toString(), 650, 500);
-			g.drawString("N for next ball", 650, 100);
-			g.drawString("R for restart", 650, 150);
 		}
 
 		for(Bumpers b : bumpers)
@@ -211,21 +211,13 @@ public class Board extends JFrame implements KeyListener
 			g.fillRect(w.getX(), w.getY(), 50, 50);
 		}
 		g.drawImage(ball.getImage(), ball.getX(), ball.getY(), 30, 30, null);
-		paintScore(g);
 	}
 	public void paintGameOver(Graphics g)
 	{
-		paintScore(g);
 		g.setColor(Color.BLACK);
-		g.drawString("Game Over", 250, 500);
-		
+		g.drawString("Game Over", 250, 500);		
 	}
-	public void paintScore(Graphics g)
-	{
-		g.clearRect(600, 0, 200, 1000);
-		g.setColor(Color.BLACK);
-		g.drawString("Balls Left: " + ballsLeft, 650, 200);
-	}
+
 	public void keyTyped(KeyEvent e)
 	{
 		
